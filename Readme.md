@@ -4,9 +4,7 @@ UC:  Desenvolvimento de Sistemas Web
 Tutor: Julio Cezar Rutke
 Desafio 1: Planejamento da arquitetura e desenvolvimento inicial de API REST 
 Grupo: 8
-Nomes: 
-Fabiano Carcuchinski Haag
-Sidnei Avelino da Silva Junior
+Nomes: Fabiano Carcuchinski Haag
 
 
 Está é a primeira versão funcional da API RESTful desenvolvida para modernização dos serviços digitais da agência de viagens, permitindo integração com parceiros comerciais e aplicativos de turismo. Esta versão ainda não possui persistência em banco de dados, mas permite o cadastro e listagem de destinos e avaliações dos destinos
