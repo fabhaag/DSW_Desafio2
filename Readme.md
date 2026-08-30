@@ -53,7 +53,7 @@ A aplicação adota uma **Arquitetura em Camadas (Layered Architecture)**, garan
 }
 
 
-Comando que utilizamos para os testes:
+Comando que utilizamos para os testes de todos os endpoint desta API:
 
 curl.exe -i -X POST http://localhost:8080/destinos -H "Content-Type: application/json" -d '{\"nome\": \"Florianópolis\", \"localizacao\": \"Santa Catarina, Brasil\", \"descricao\": \"Ilha com mais de 40 praias.\"}'
 
