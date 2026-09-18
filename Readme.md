@@ -114,119 +114,284 @@ Permitida para "ADMIN"
 
 ## 🚀 Exemplos de Requisições (JSON)
 
+Os testes foram realizados com o POSTMAN, nos campos 
+
+AUTORIZATION 
+foi selecionado "Basic Auth", Username: "admin" e Password: "1234".
+
+BODY foi selecionado "Raw" e "JSON" com o conteúdo como abaixo:
+{
+  "nome": "Praia da Joaquina",
+  "localizacao": "Florianópolis, SC",
+  "descricao": "Famosa pelas dunas e surf."
+}
+
+Foi utilizado um servidor Amazon EC2, rodando na porta 8080, com IP Elástico (54.80.166.128:8080) e foi instalado o banco PostgreSQL, os comandos de instalação estão listados abaixo:
+
+As requisições foram para a seguinte endpoint: 
+
+http://54.80.166.128:8080/destinos
+
+
+# Atualizar os pacotes
+sudo dnf update -y
+
+# Instalar o Java 21 (Amazon Corretto)
+sudo dnf install java-21-amazon-corretto -y
+
+# Instalar o Git
+sudo dnf install git -y
+
+# Verificar se o Java está no path corretamente
+java -version
+
+# Instalar o servidor PostgreSQL
+sudo dnf install postgresql15-server -y
+
+# Inicializar o banco de dados
+sudo postgresql-setup --initdb
+
+# Iniciar e habilitar o serviço para iniciar com o sistema
+sudo systemctl start postgresql
+sudo systemctl enable postgresql
+
+# Acessar o terminal do PostgreSQL para criar o banco e configurar a senha do usuário padrão:
+sudo -u postgres psql
+
+CREATE DATABASE destinos_db;
+ALTER USER postgres WITH PASSWORD '1234';
+\q
+
+# Clonar o repositório enviado anteriormente
+git clone https://github.com/fabhaag/DSW_Desafio2.git
+cd DSW_Desafio2
+
+# Se necessário, edite o application.properties para bater com a senha do banco definida no passo anterior
+# nano src/main/resources/application.properties
+
+# Dar permissão de execução ao Maven Wrapper
+chmod +x mvnw
+
+# Iniciar a aplicação
+./mvnw spring-boot:run
+
+
+#Verificar o status do PostgreSQL
+Systemctl status postgresql
+
+#Revisar as credenciais no application.properties
+cat src/main/resources/application.properties
+
+
 ### 1. Cadastrar Destino (`POST /destinos`)
+
+http://54.80.166.128:8080/destinos
+"Basic Auth", Username: "admin" e Password: "1234"
+
 ```json
+{
+  "nome": "Praia da Joaquina",
+  "localizacao": "Florianópolis, SC",
+  "descricao": "Famosa pelas dunas e surf."
+}
+
+HTTP/1.1 201 
+Content-Type: application/json
+Transfer-Encoding: chunked
+Date: Fri, 18 Set 2026 19:47:42 GMT
+
+### 2. Tentativa de cadastrar Destino (`POST /destinos`) com usuário "user"
+
+http://54.80.166.128:8080/destinos
+"Basic Auth", Username: "user" e Password: "1234"
+
 {
   "nome": "Fernando de Noronha",
   "localizacao": "Pernambuco, Brasil",
-  "descricao": "Arquipélago vulcânico com praias preservadas e mergulho de alta visibilidade."
+  "descricao": "Arquipélago vulcânico isolado, famoso por suas praias paradisíacas"
 }
 
+Resposta: 403 Forbidden
 
-Comando que utilizamos para os testes de todos os endpoint desta API:
+```json
+{
+    "timestamp": "2026-09-18T20:56:53.131Z",
+    "status": 403,
+    "error": "Forbidden",
+    "path": "/destinos"
+}
 
-curl.exe -i -X POST http://localhost:8080/destinos -H "Content-Type: application/json" -d '{\"nome\": \"Florianópolis\", \"localizacao\": \"Santa Catarina, Brasil\", \"descricao\": \"Ilha com mais de 40 praias.\"}'
-
-
-Teste de Cadastro:
-
-curl.exe -i -X POST http://localhost:8080/destinos -H "Content-Type: application/json" -d '{\"nome\": \"Ouro Preto\", \"localizacao\": \"Minas Gerais, Brasil\", \"descricao\": \"Cidade histórica colonial famosa por sua arquitetura barroca, igrejas ricamente decoradas e ladeiras de pedra.\"}'
 HTTP/1.1 201 
 Content-Type: application/json
 Transfer-Encoding: chunked
-Date: Fri, 28 Aug 2026 19:47:42 GMT
+Date: Fri, 18 Set 2026 19:47:42 GMT
 
-{"id":5,"nome":"Ouro Preto","localizacao":"Minas Gerais, Brasil","descricao":"Cidade histórica colonial famosa por sua arquitetura barroca, igrejas ricamente decoradas e ladeiras de pedra.","mediaAvaliacao":0.0,"totalAvaliacoes":0}
 
-Teste de Listagem:
+[
+    {
+        "nome": "Praia da Joaquina",
+        "localizacao": "Florianópolis, SC",
+        "descricao": "Famosa pelas dunas e surf.",
+        "id": 1,
+        "mediaAvaliacao": 0.0,
+        "totalAvaliacoes": 0
+    }
+]
 
-curl.exe -i -X GET http://localhost:8080/destinos
+### 3. Recuperar Destinos (`GET /destinos`)
+http://54.80.166.128:8080/destinos
+"Basic Auth", Username: "admin" e Password: "1234"
 
-HTTP/1.1 200                                                                                                                 
-Content-Type: application/json
-Transfer-Encoding: chunked                                                                                                                               
-Date: Fri, 28 Aug 2026 19:47:52 GMT                                                                                                           
-
-[{"id":1,"nome":"Florianópolis","localizacao":"Santa Catarina, Brasil","descricao":"Ilha com mais de 40 praias.","mediaAvaliacao":0.0,"totalAvaliacoes":0},{"id":2,"nome":"Santos","localizacao":"São Paulo, Brasil","descricao":"Cidade litorânea.","mediaAvaliacao":0.0,"totalAvaliacoes":0},{"id":3,"nome":"Fernando de Noronha","localizacao":"Pernambuco, Brasil","descricao":"Arquipélago vulcânico isolado, famoso por suas praias paradisíacas, águas cristalinas e rica vida marinha.","mediaAvaliacao":0.0,"totalAvaliacoes":0},{"id":4,"nome":"Gramado","localizacao":"Rio Grande do Sul, Brasil","descricao":"Cidade serrana com forte influência alemã e italiana, conhecida pelo clima frio, arquitetura europeia e festivais.","mediaAvaliacao":0.0,"totalAvaliacoes":0},{"id":5,"nome":"Ouro Preto","localizacao":"Minas Gerais, Brasil","descricao":"Cidade histórica colonial famosa por sua arquitetura barroca, igrejas ricamente decoradas e ladeiras de pedra.","mediaAvaliacao":0.0,"totalAvaliacoes":0}]
-
-Teste de busca:
-
-curl.exe -i -X GET "http://localhost:8080/destinos/pesquisar?termo=Ouro"
-
-[{"id":5,"nome":"Ouro Preto","localizacao":"Minas Gerais, Brasil","descricao":"Cidade histórica colonial famosa por sua arquitetura barroca, igrejas ricamente decoradas e ladeiras de pedra.","mediaAvaliacao":0.0,"totalAvaliacoes":0}]
-
-Teste de Detalhamento de Destino:
-
-curl.exe -i -X GET "http://localhost:8080/destinos/{3}"                 
-HTTP/1.1 200 
-Content-Type: application/json
-Transfer-Encoding: chunked
-Date: Fri, 28 Aug 2026 19:55:52 GMT
-
-{"id":3,"nome":"Fernando de Noronha","localizacao":"Pernambuco, Brasil","descricao":"Arquipélago vulcânico isolado, famoso por suas praias paradisíacas, águas cristalinas e rica vida marinha.","mediaAvaliacao":0.0,"totalAvaliacoes":0}
-
-Teste de Atualização de Destino:
-
-curl.exe -i -X PUT "http://localhost:8080/destinos/{1}" -H "Content-Type: application/json" -d '{\"nome\": \"Florianópolis\", \"localizacao\": \"Santa Catarina, Brasil\", \"descricao\": \"Ilha da Magia, famosa por unir praias paradisíacas, natureza preservada e a infraestrutura de uma grande capital.\"}' 
+Resposta: 200 OK
 
 HTTP/1.1 200 
 Content-Type: application/json
 Transfer-Encoding: chunked
-Date: Fri, 28 Aug 2026 20:01:06 GMT
+Date: Fri, 18 Sep 2026 20:39:45 GMT
 
-{"id":1,"nome":"Florianópolis","localizacao":"Santa Catarina, Brasil","descricao":"Ilha da Magia, famosa por unir praias paradisíacas, natureza preservada e a infraestrutura de uma grande capital.","mediaAvaliacao":0.0,"totalAvaliacoes":0}
+[
+    {
+        "nome": "Praia da Joaquina",
+        "localizacao": "Florianópolis, SC",
+        "descricao": "Famosa pelas dunas e surf.",
+        "id": 1,
+        "mediaAvaliacao": 0.0,
+        "totalAvaliacoes": 0
+    },
+    {
+        "nome": "Fernando de Noronha",
+        "localizacao": "Pernambuco, Brasil",
+        "descricao": "Arquipélago vulcânico isolado, famoso por suas praias paradisíacas",
+        "id": 2,
+        "mediaAvaliacao": 0.0,
+        "totalAvaliacoes": 0
+    }
+]
+
+### 4. Buscar Destinos (`GET /destinos`)
+"Basic Auth", Username: "admin" e Password: "1234"
+
+http://54.80.166.128:8080/destinos/pesquisar?termo=FLO
+
+Resposta: 200 OK
+
+[
+    {
+        "nome": "Praia da Joaquina",
+        "localizacao": "Florianópolis, SC",
+        "descricao": "Famosa pelas dunas e surf.",
+        "id": 1,
+        "mediaAvaliacao": 0.0,
+        "totalAvaliacoes": 0
+    }
+]
+
+### 5. Detalhar Destinos (`GET /destinos`)
+"Basic Auth", Username: "admin" e Password: "1234"
+
+http://54.80.166.128:8080/destinos/2
+
+Resposta: 200 OK
+
+{
+    "nome": "Fernando de Noronha",
+    "localizacao": "Pernambuco, Brasil",
+    "descricao": "Arquipélago vulcânico isolado, famoso por suas praias paradisíacas",
+    "id": 2,
+    "mediaAvaliacao": 0.0,
+    "totalAvaliacoes": 0
+}
+
+### 6. Atualizar Destino (`PUT /destinos`)
+"Basic Auth", Username: "user" e Password: "1234"
+
+http://54.80.166.128:8080/destinos/2
+
+{
+  "nome": "Fernando de Noronha",
+  "localizacao": "Pernambuco, Brasil",
+  "descricao": "Arquipélago vulcânico"
+}
+
+Resposta: 403 Forbidden
+
+{
+    "timestamp": "2026-09-18T21:12:09.983Z",
+    "status": 403,
+    "error": "Forbidden",
+    "path": "/destinos/2"
+}
+
+### 7. Atualizar Destino (`PUT /destinos`)
+"Basic Auth", Username: "admin" e Password: "1234"
+
+http://54.80.166.128:8080/destinos/2
+
+{
+  "nome": "Fernando de Noronha",
+  "localizacao": "Pernambuco, Brasil",
+  "descricao": "Arquipélago vulcânico"
+}
+
+Resposta: 200 OK
+
+{
+    "nome": "Fernando de Noronha",
+    "localizacao": "Pernambuco, Brasil",
+    "descricao": "Arquipélago vulcânico",
+    "id": 2,
+    "mediaAvaliacao": 0.0,
+    "totalAvaliacoes": 0
+}
+
+### 8. Atualizar Destino (`PATCH /destinos`)
+"Basic Auth", Username: "admin" e Password: "1234"
+
+http://54.80.166.128:8080/destinos/1/avaliar
+
+{
+  "nota": "4"
+}
+
+Resposta: 200 OK
+
+{
+    "nome": "Praia da Joaquina",
+    "localizacao": "Florianópolis, SC",
+    "descricao": "Famosa pelas dunas e surf.",
+    "id": 1,
+    "mediaAvaliacao": 4.0,
+    "totalAvaliacoes": 1
+}
+
+### 9. Cadastrar Destino (`POST /destinos`)
+
+http://54.80.166.128:8080/destinos
+"Basic Auth", Username: "admin" e Password: "1234"
+
+```json
+{
+  "nome": "Ouro Preto",
+  "localizacao": "Minas Gerais, Brasil",
+  "descricao": "Cidade histórica colonial famosa por sua arquitetura barroca"
+}
+
+Resposta: 201 Created
+
+{
+    "nome": "Ouro Preto",
+    "localizacao": "Minas Gerais, Brasil",
+    "descricao": "Cidade histórica colonial famosa por sua arquitetura barroca",
+    "id": 3,
+    "mediaAvaliacao": 0.0,
+    "totalAvaliacoes": 0
+}
+
+### 10. Delete Destino (`DELETE /destinos`)
+"Basic Auth", Username: "admin" e Password: "1234"
+
+http://54.80.166.128:8080/destinos/3
+
+Resposta: 204 No Content
 
 
-Teste de Avaliação:
-
-curl.exe -i -X PATCH http://localhost:8080/destinos/1/avaliar -H "Content-Type: application/json" -d '{\"nota\": 5}'
-HTTP/1.1 200 
-Content-Type: application/json
-Transfer-Encoding: chunked
-Date: Fri, 28 Aug 2026 20:06:33 GMT
-
-{"id":1,"nome":"Florianópolis","localizacao":"Santa Catarina, Brasil","descricao":"Ilha da Magia, famosa por unir praias paradisíacas, natureza preservada e a infraestrutura de uma grande capital.","mediaAvaliacao":5.0,"totalAvaliacoes":1}
-
-
-Teste de Média de Avaliações:
-
-curl.exe -i -X PATCH http://localhost:8080/destinos/3/avaliar -H "Content-Type: application/json" -d '{\"nota\": 5}'
-HTTP/1.1 200 
-Content-Type: application/json
-Transfer-Encoding: chunked
-Date: Fri, 28 Aug 2026 20:08:26 GMT
-
-{"id":3,"nome":"Fernando de Noronha","localizacao":"Pernambuco, Brasil","descricao":"Arquipélago vulcânico isolado, famoso por suas praias paradisíacas, águas cristalinas e rica vida marinha.","mediaAvaliacao":5.0,"totalAvaliacoes":1}
-PS C:\Users\e015614\Desktop\Documentos Pessoais\ADS EAD - SENAI\2026-02-Quarto Semestre\2-Desenvolvimento de Sistemas Web\destinos-api> curl.exe -i -X PATCH http://localhost:8080/destinos/3/avaliar -H "Content-Type: application/json" -d '{\"nota\": 4}'
-HTTP/1.1 200 
-Content-Type: application/json
-Transfer-Encoding: chunked
-Date: Fri, 28 Aug 2026 20:08:39 GMT
-
-{"id":3,"nome":"Fernando de Noronha","localizacao":"Pernambuco, Brasil","descricao":"Arquipélago vulcânico isolado, famoso por suas praias paradisíacas, águas cristalinas e rica vida marinha.","mediaAvaliacao":4.5,"totalAvaliacoes":2}
-PS C:\Users\e015614\Desktop\Documentos Pessoais\ADS EAD - SENAI\2026-02-Quarto Semestre\2-Desenvolvimento de Sistemas Web\destinos-api> 
-
-
-Teste de cadastro e exclusão de destino:
-
-
-curl.exe -i -X POST http://localhost:8080/destinos -H "Content-Type: application/json" -d '{\"nome\": \"Teste\", \"localizacao\": \"Estado, Brasil\", \"descricao\": \"Descriçãos.\"}'                                
-HTTP/1.1 201 
-Content-Type: application/json
-Transfer-Encoding: chunked
-Date: Fri, 28 Aug 2026 20:13:11 GMT
-
-{"id":6,"nome":"Teste","localizacao":"Estado, Brasil","descricao":"Descriçãos.","mediaAvaliacao":0.0,"totalAvaliacoes":0}
-
-curl.exe -i -X DELETE "http://localhost:8080/destinos/{6}"
-HTTP/1.1 204 
-Date: Fri, 28 Aug 2026 20:15:41 GMT
-
-
- curl.exe -i -X GET http://localhost:8080/destinos                                                                                                                         
-HTTP/1.1 200                                                                                                                            
-Content-Type: application/json
-Transfer-Encoding: chunked
-Date: Fri, 28 Aug 2026 20:16:29 GMT
-
-[{"id":1,"nome":"Florianópolis","localizacao":"Santa Catarina, Brasil","descricao":"Ilha da Magia, famosa por unir praias paradisíacas, natureza preservada e a infraestrutura de uma grande capital.","mediaAvaliacao":5.0,"totalAvaliacoes":1},{"id":2,"nome":"Santos","localizacao":"São Paulo, Brasil","descricao":"Cidade litorânea.","mediaAvaliacao":4.0,"totalAvaliacoes":1},{"id":3,"nome":"Fernando de Noronha","localizacao":"Pernambuco, Brasil","descricao":"Arquipélago vulcânico isolado, famoso por suas praias paradisíacas, águas cristalinas e rica vida marinha.","mediaAvaliacao":4.5,"totalAvaliacoes":2},{"id":4,"nome":"Gramado","localizacao":"Rio Grande do Sul, Brasil","descricao":"Cidade serrana com forte influência alemã e italiana, conhecida pelo clima frio, arquitetura europeia e festivais.","mediaAvaliacao":0.0,"totalAvaliacoes":0},{"id":5,"nome":"Ouro Preto","localizacao":"Minas Gerais, Brasil","descricao":"Cidade histórica colonial famosa por sua arquitetura barroca, igrejas ricamente decoradas e ladeiras de pedra.","mediaAvaliacao":0.0,"totalAvaliacoes":0}]
