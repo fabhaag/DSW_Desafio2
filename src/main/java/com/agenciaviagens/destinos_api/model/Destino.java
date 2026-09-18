@@ -2,7 +2,20 @@ package com.agenciaviagens.destinos_api.model;
 
 import java.util.Objects;
 
+// A partir do Java 17, o projeto é Jakarta, versões anteriores são Javax. Por isso, a importação do EntityManager é feita a partir do pacote jakarta.persistence.
+import jakarta.persistence.*;
+
+// Anotação @Entity indica que a classe Destino é uma entidade JPA, ou seja, ela será mapeada para uma tabela no banco de dados. 
+// A anotação @Table especifica o nome da tabela correspondente à entidade.
+@Entity
+@Table(name = "destinos")
+
 public class Destino {
+
+    // Anotação @Id indica que o atributo id é a chave primária da entidade.
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Long id;
     private String nome;
     private String localizacao;
@@ -10,13 +23,9 @@ public class Destino {
     private Double mediaAvaliacao;
     private Integer totalAvaliacoes;
 
-    public Destino() {
-        this.mediaAvaliacao = 0.0;
-        this.totalAvaliacoes = 0;
-    }
+    public Destino() {}
 
-    public Destino(Long id, String nome, String localizacao, String descricao) {
-        this.id = id;
+    public Destino(String nome, String localizacao, String descricao) {
         this.nome = nome;
         this.localizacao = localizacao;
         this.descricao = descricao;

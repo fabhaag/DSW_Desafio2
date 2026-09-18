@@ -2,12 +2,12 @@
 
 UC:  Desenvolvimento de Sistemas Web
 Tutor: Julio Cezar Rutke
-Desafio 1: Planejamento da arquitetura e desenvolvimento inicial de API REST 
+Desafio 2: Evolução da API REST com banco de dados e segurança 
 Grupo: 8
 Nomes: Fabiano Carcuchinski Haag
 
 
-Está é a primeira versão funcional da API RESTful desenvolvida para modernização dos serviços digitais da agência de viagens, permitindo integração com parceiros comerciais e aplicativos de turismo. Esta versão ainda não possui persistência em banco de dados, mas permite o cadastro e listagem de destinos e avaliações dos destinos
+A API Destinos é uma aplicação desenvolvida em Java com Spring Boot para o gerenciamento de destinos turísticos. Esta versão representa uma evolução arquitetural, migrando o armazenamento de dados em memória para um banco de dados relacional PostgreSQL utilizando Spring Data JPA. Além disso, a aplicação agora conta com mecanismos de autenticação e autorização baseados em perfis de acesso (ADMIN e USER) implementados com Spring Security.
 
 ---
 
@@ -15,17 +15,70 @@ Está é a primeira versão funcional da API RESTful desenvolvida para moderniza
 
 A aplicação adota uma **Arquitetura em Camadas (Layered Architecture)**, garantindo separação clara de responsabilidades, alta coesão e facilidade de manutenção futura:
 
+* **Config (`config`):** Centralizar arquivos como SecurityConfig.java, configurações de CORS (Cross-Origin Resource Sharing), Swagger/OpenAPI ou configurações de cache em um pacote config ajuda a manter a arquitetura limpa. Isso separa as regras de negócio e o mapeamento do banco de dados (que ficam em service e model) das configurações de infraestrutura e comportamento do framework.
 * **Controller (`controller`):** Responsável pelo tratamento das requisições HTTP, validação de payload via Bean Validation e retorno de status codes apropriados.
 * **Service (`service`):** Camada de regras de negócio, centralizando a lógica de cadastro, pesquisa filtrada, exclusão e recálculo da média ponderada de avaliações.
 * **Model/Entity (`model`):** Representação do domínio (`Destino`), encapsulando os atributos essenciais e métodos de negócio sobre seu próprio estado.
+* **Repository (`repository`):** A Pasta repository isola as interfaces responsáveis pela comunicação direta com o banco de dados (Spring Data JPA).
 * **DTO (`dto`):** Objetos de transferência de dados (`Record`) para desacoplar a entrada de requisições do modelo interno.
-* **Persistência em Memória:** Implementada com `ConcurrentHashMap` e `AtomicLong`, assegurando integridade concorrente (thread-safety) sem a necessidade de infraestrutura de banco de dados neste estágio inicial.
+* **Persistência em Banco:** Java, banco de dados PostgreSQL rodando na porta 5432 e as credenciais (admin/1234 e user/1234) geradas pelo inicializador de dados para que os avaliadores consigam testar o controle de permissões por perfil de acesso adequadamente.
+
+
 
 ### Justificativa das Tecnologias
 * **Java:** Linguagem com tipagem estática robusta, excelente desempenho e confiabilidade em sistemas corporativos.
 * **Spring Boot:** Reduz o boilerplate de configuração, provê servidor Tomcat embutido e oferece integração nativa com o ecossistema REST (`Spring MVC` e `Jakarta Validation`).
+* **Spring Boot JPA:** 
+* **Spring Security:** 
+* **PostgreSQL:** 
+* **Maven:** 
+
+
+Editor:
 * **Visual Studio Code:** Editor leve, com suporte a extensões como *Extension Pack for Java* e *Spring Boot Extension Pack*.
 
+🚀 O Core e Ecossistema Base
+
+* **Java:** É a linguagem de programação base. É uma linguagem orientada a objetos, segura, independente de plataforma (roda em qualquer lugar através da JVM) e amplamente utilizada por grandes empresas devido à sua estabilidade e performance.
+
+* **Spring Boot:** É um framework que estende o ecossistema Spring tradicional. O seu papel principal é simplificar a configuração. Ele elimina a necessidade de configurações manuais complexas (como arquivos XML gigantes) e traz um servidor web embutido (como o Tomcat). Isso significa que você pode rodar sua aplicação web imediatamente como um programa Java comum.
+
+🗄️ Persistência e Banco de Dados
+
+* **Spring Data JPA**: É um módulo do Spring que facilita drasticamente a comunicação com o banco de dados. Ele utiliza o conceito de ORM (Mapeamento Objeto-Relacional), permitindo que você interaja com as tabelas do banco de dados usando classes e métodos Java comuns, sem precisar escrever códigos SQL manuais para operações básicas (como salvar, deletar ou buscar).
+
+* **PostgreSQL**: É o banco de dados propriamente dito. Trata-se de um sistema de gerenciamento de banco de dados relacional (SGBD) de código aberto, extremamente poderoso, seguro e conhecido por aguentar grandes volumes de dados e consultas complexas com excelente performance.
+
+🛡️ Segurança
+
+* **Spring Security**: É o módulo responsável por proteger a sua aplicação. Ele gerencia os processos de autenticação (verificar quem é o usuário, ex: login com e-mail e senha / tokens JWT) e autorização (verificar o que esse usuário pode fazer, ex: definir que apenas usuários com a regra ADMIN podem deletar um registro).
+
+📦 Gerenciamento do Projeto
+
+* **Maven**: É a ferramenta de automação de build e gerenciamento de dependências. Em vez de baixar arquivos .jar manualmente na internet e colocá-los no projeto, você apenas lista o que precisa (como o driver do PostgreSQL ou o Spring Security) em um arquivo chamado pom.xml. O Maven se encarrega de baixar tudo automaticamente de um repositório central, além de compilar e empacotar o seu projeto para produção.
+
+Resumo Visual: Como as tecnologias trabalham juntas:
+
+┌───────────────────────────────────────────────────────────┐
+│                          MAVEN                            │
+│           (Gerencia e monta todo o projeto)               │
+└─────────────────────────────┬─────────────────────────────┘
+                              ▼
+┌───────────────────────────────────────────────────────────┐
+│                       JAVA + SPRING BOOT                  │
+│             (Motor principal e lógica de negócio)         │
+│                                                           │
+│   ┌───────────────────┐           ┌───────────────────┐   │
+│   │  SPRING SECURITY  │           │  SPRING DATA JPA  │   │
+│   │ (Protege os dados │           │ (Conversa com o   │   │
+│   │    e acessos)     │           │   banco em Java)  │   │
+│   └───────────────────┘           └─────────┬─────────┘   │
+└─────────────────────────────────────────────┼─────────────┘
+                                              ▼
+                                    ┌───────────────────┐
+                                    │    POSTGRESQL     │
+                                    │ (Guarda os dados) │
+                                    └───────────────────┘
 ---
 
 ## 🔌 Endpoints da API
