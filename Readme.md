@@ -26,8 +26,8 @@ A aplicação adota uma **Arquitetura em Camadas (Layered Architecture)**, garan
 
 
 ### Justificativa das Tecnologias
-* **Java:** Linguagem com tipagem estática robusta, excelente desempenho e confiabilidade em sistemas corporativos.
-* **Spring Boot:** Reduz o boilerplate de configuração, provê servidor Tomcat embutido e oferece integração nativa com o ecossistema REST (`Spring MVC` e `Jakarta Validation`).
+* **Java:** 
+* **Spring Boot:** 
 * **Spring Boot JPA:** 
 * **Spring Security:** 
 * **PostgreSQL:** 
@@ -83,15 +83,32 @@ Resumo Visual: Como as tecnologias trabalham juntas:
 
 ## 🔌 Endpoints da API
 
+// Apenas ADMIN pode cadastrar, atualizar ou excluir
+// ADMIN e USER podem listar e avaliar destinos
+
 | Método | Rota | Descrição | Status Sucesso |
 | :--- | :--- | :--- | :--- |
+
 | `POST` | `/destinos` | Cadastra um novo destino | `201 Created` |
+| Permitido para ADMIN
+
 | `GET` | `/destinos` | Lista todos os destinos | `200 OK` |
+| Permitido para todos usuários ou  as Consultas são públicas
+
 | `GET` | `/destinos/pesquisar?termo={termo}` | Busca por nome ou localização | `200 OK` |
+| Permitido para todos usuários ou  as Consultas são públicas
+
 | `GET` | `/destinos/{id}` | Detalha um destino específico | `200 OK` ou `404 Not Found` |
+| Permitido para todos usuários ou  as Consultas são públicas
+
 | `PUT` | `/destinos/{id}` | Atualiza os dados de um destino | `200 OK` ou `404 Not Found` |
+Permitida para "ADMIN"
+
 | `PATCH` | `/destinos/{id}/avaliar` | Registra nota (1 a 5) e recalcula média | `200 OK` ou `404 Not Found` |
+Avaliação permitida para "USER" ou "ADMIN"
+
 | `DELETE`| `/destinos/{id}` | Remove um destino | `204 No Content` ou `404 Not Found` |
+Permitida para "ADMIN"
 
 ---
 
